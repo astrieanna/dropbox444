@@ -10,18 +10,18 @@ class Resource:
         #Should only be called on path that exists
         assert(o.exists(path))
         #strip trailing '/' to accomidate basepath
-        path = o.realpath(path).rstrip('/')
+        realpath = o.realpath(path).rstrip('/')
 
-        self.category = 'directory' if o.isdir(path) else 'file'
-        self.name = o.basename(path)
+        self.category = 'directory' if o.isdir(realpath) else 'file'
+        self.name = o.basename(realpath)
         if(self.category == 'directory'):
-            self.numItems = len(os.listdir(path))
+            self.numItems = len(os.listdir(realpath))
         else:
-            self.size = o.getsize(path)
+            self.size = o.getsize(realpath)
         self.url = url
         self.path = path
-        self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
-        self.resourceType = mimetypes.guess_type(path)[0]
+        self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(realpath))
+        self.resourceType = mimetypes.guess_type(realpath)[0]
 
 def urlToPath(url):
     return url.split('/',3)[3]
