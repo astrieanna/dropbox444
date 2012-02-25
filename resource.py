@@ -4,7 +4,7 @@ import mimetypes
 import datetime
 
 class Resource:
-    def __init__(self, path):
+    def initFromPath(self, path):
         #Should only be called on path that exists
         assert(o.exists(path))
         #strip trailing '/' to accomidate basepath
@@ -26,5 +26,7 @@ def getResourceList(path):
     resourceList = []
     #TODO: handle ".." listing (probably elsewhere)
     for file in os.listdir(path):
-        resourceList.append(Resource(path + '/' + file))
+        r = Resource()
+        r.initFromPath(path)
+        resourceList.append(r)
     return resourceList
