@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from resource import Resource
+from resource import urlToPath
 import datetime as DT
 
 # parseResourceList :: String -> [Resource]
@@ -46,18 +47,48 @@ def parseResource(e):
     r = Resource()
     r.category = e.get('category')
     r.name = e.findtext('ResourceName')
-    if(r.category == 'directory'):
+    if r.category == 'directory':
         r.numItems = e.findtext('ResourceNumItems')
     else:
         r.size = e.findtext('ResourceSize')
     r.url = e.findtext('ResourceURL')
-    # r.path = urlToPath(r.url)
+    if r.url:
+        r.path = urlToPath(r.url)
     r.resourceDate = parseDate(e.find('ResourceDate'))
     r.resourceType = e.findtext('ResourceType')
     return r
 
+# buildResource :: Resource -> ET.Element
+def buildResource(resource):
+    e = ET.Element('Resource',{'category' : resource.category})
+    if resource.category == 'directory':
+        ec = ET.Element('ResourceNumItems')
+        ec.text = resource.numItems
+    else:
+        ec = ET.Element('ResourceSize')
+        ec.text = resource.size
+    e.append(ec)
+
+    ec = ET.Element('ResourceName')
+    ec.text = resource.name
+    e.append(ec)
+
+    ec = ET.Element('ResourceURL')
+    ec.text = resource.url
+    e.append(ec)
+
+    if resource.resourceDate:
+        e.append(buildDate(resource.resourceDate))
+
+    ec = ET.Element('ResourceType')
+    ec.text = resource.resourceType
+    e.append(ec)
+    return e
+
 # parseDate :: ET.Element -> DT.DateTime
 def parseDate(e):
+    if e is None:
+        return None
     year = int(e.findtext('year'))
     month = int(e.findtext('month'))
     day = int(e.findtext('day'))
@@ -69,19 +100,25 @@ def parseDate(e):
 # buildDate :: DT.DateTime -> ET.Element
 def buildDate(dt):
     e = ET.Element('ResourceDate')
-    e.append(ET.Element('year', {'text':dt.year}))
-    e.append(ET.Element('month', {'text':dt.month}))
-    e.append(ET.Element('day', {'text':dt.day}))
-    e.append(ET.Element('hour', {'text':dt.hour}))
-    e.append(ET.Element('min', {'text':dt.minute}))
-    e.append(ET.Element('sec', {'text':dt.second}))
-    return e
-
-# buildResource :: Resource -> ET.Element
-def buildResource(resource):
-    e = ET.Element('Resource',{'category' : resource.category})
-    e.append(ET.Element('ResourceName', {'text' : resource.name}))
-    ET.dump(e)
+    y = ET.Element('year')
+    y.text = str(dt.year)
+    e.append(y)
+    m = ET.Element('month')
+    m.text = str(dt.month)
+    e.append(m)
+    d = ET.Element('day')
+    d.text = str(dt.day)
+    e.append(d)
+    h = ET.Element('hour')
+    h.text = str(dt.hour)
+    e.append(h)
+    mi = ET.Element('min')
+    mi.text = str(dt.minute)
+    e.append(mi)
+    s = ET.Element('sec')
+    s.text = str(dt.second)
+    e.append(s)
+    
     return e
 
 if __name__ == "__main__":
@@ -100,7 +137,16 @@ if __name__ == "__main__":
                 </ResourceDate>\
                 <ResourceType> application/pdf </ResourceType>\
                 </Resource>\
+                <Resource category=\"directory\">\
+                <ResourceName>mymusic </ResourceName>\
+                </Resource>\
                 </ResourceList>"
     rs = parseResourceList(rl_xmlstr)
+    print "RS:"
+    for r in rs:
+        print "\t%s" % (r.name)
     rl_xml = buildResourceList(rs)
-
+    rs2 = parseResourceList(rl_xml)
+    print "RS2:"
+    for r2 in rs2:
+        print "\t%s" % (r2.name)
