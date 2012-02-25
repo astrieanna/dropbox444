@@ -1,14 +1,14 @@
 import xml.etree.ElementTree as ET
 
-# parseResourceList :: String -> [{String:Value}]
+# parseResourceList :: String -> [Resource]
 
 # buildResourceList :: [Resource] -> String
 
-# parseResourceDownload :: String -> {String:Value}
+# parseResourceDownload :: String -> Resource
 
 # buildResourceDownload :: Resource -> String
 
-# parseResourceUpload :: String -> {String:Value}
+# parseResourceUpload :: String -> Resource
 
 # buildResourceDownload :: Resource -> String
 
