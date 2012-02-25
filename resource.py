@@ -39,7 +39,7 @@ def getResourceList(url):
     resourceList = []
     #TODO: handle ".." listing (probably elsewhere)
     for file in os.listdir(path):
-        file = o.normpath(file + '/' + path)
+        file = o.normpath(path +'/'+ file)
         r = Resource()
         r.initFromUrl(front + '/' + file)
         resourceList.append(r)
