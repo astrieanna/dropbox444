@@ -4,7 +4,9 @@ import mimetypes
 import datetime
 
 class Resource:
-    def initFromPath(self, path):
+    def initFromUrl(self, url):
+        path = urlToPath(url) 
+        print path
         #Should only be called on path that exists
         assert(o.exists(path))
         #strip trailing '/' to accomidate basepath
@@ -16,17 +18,29 @@ class Resource:
             self.numItems = len(os.listdir(path))
         else:
             self.size = o.getsize(path)
-        self.relativePath = path
+        self.url = url
+        self.path = path
         self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
         self.resourceType = mimetypes.guess_type(path)[0]
 
+def urlToPath(url):
+    return url.split('/',3)[3]
 
-def getResourceList(path):
+def splitUrl(url):
+    path = urlToPath(url)
+    front = url[0: len(url) - len(path) - 1]
+    print front, path
+    return (front, path)
+
+
+def getResourceList(url):
+    (front, path) = splitUrl(url)
     assert(o.isdir(path))
     resourceList = []
     #TODO: handle ".." listing (probably elsewhere)
     for file in os.listdir(path):
+        file = o.normpath(file + '/' + path)
         r = Resource()
-        r.initFromPath(path)
+        r.initFromUrl(front + '/' + file)
         resourceList.append(r)
     return resourceList
