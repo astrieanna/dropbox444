@@ -19,3 +19,12 @@ class Resource:
         self.relativePath = path
         self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
         self.resourceType = mimetypes.guess_type(path)[0]
+
+
+def getResourceList(path):
+    assert(o.isdir(path))
+    resourceList = []
+    #TODO: handle ".." listing (probably elsewhere)
+    for file in os.listdir(path):
+        resourceList.append(Resource(path + '/' + file))
+    return resourceList
