@@ -39,9 +39,12 @@ class Resource:
             raise Exception("Only Base64 encoding is supported.")
         if path == False:
             path = self.path
-        file = open(path, "wb")
-        file.write(base64.b64decode(self.content))
-        file.close()
+        if self.category == "directory":
+            mkdir(path)
+        else:
+            file = open(path, "wb")
+            file.write(base64.b64decode(self.content))
+            file.close()
         
     def delete(self):
         if self.category == "file":

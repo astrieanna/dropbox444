@@ -63,6 +63,9 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     def put(self):
         self.write("Put:" + self.request)
         resource = xmlutils.parseResourceUpload(self.request.body)
+        # Error if writing uploading a directory where a file exists
+        if resource.category == "directory" and not notFound(resource.path):
+            return self.send_error(400)
         resource.putContent()
         self.set_status(200)
         self.finish()
