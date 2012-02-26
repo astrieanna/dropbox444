@@ -34,6 +34,7 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
        if uname in Handler.creds:
           return Handler.creds[uname]
 
+
     @digest.digest_auth('realm',getcreds)
     @testPredicate(forbidden, 403)
     @testPredicate(notFound, 404)
@@ -60,8 +61,11 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(forbidden, 403)
     @testPredicate(enclosingDirectoryNotFound, 404)
     def put(self):
-        #TODO: need a notFound for the directory it is in
         self.write("Put:" + self.request)
+        resource = xmlutils.parseResourceUpload(self.request.body)
+        resource.putContent()
+        self.set_status(200)
+        self.finish()
 
 
     @digest.digest_auth('realm',getcreds)

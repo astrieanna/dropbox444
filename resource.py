@@ -34,9 +34,11 @@ class Resource:
         self.content = base64.b64encode(file.read())
         file.close()
 
-    def putContent(self, path):
+    def putContent(self, path=False):
         if not self.encoding == "Base64":
             raise Exception("Only Base64 encoding is supported.")
+        if path == False:
+            path = self.path
         file = open(path, "wb")
         file.write(base64.b64decode(self.content))
         file.close()
