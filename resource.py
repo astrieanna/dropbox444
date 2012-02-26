@@ -25,6 +25,12 @@ class Resource:
         self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(realpath))
         self.resourceType = mimetypes.guess_type(realpath)[0]
 
+    def addConent(self):
+        self.encoding = "Base64"
+        file = open(self.path, "r")
+        self.content = base64.b64encode(file.read())
+        close(file)
+
 def urlToPath(url):
     return url.split('/',3)[3]
 

@@ -24,19 +24,16 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         print "host: %s\tpath: %s" % (self.request.host, self.request.path)
 
         r = Resource()
-        url = "http://" + self.request.host + self.request.path
+        url = self.request.full_url()
         r.initFromUrl(url)
 
         if r.category == 'directory':
             rs = getResourceList(url)
             xmlstr = buildResourceList(rs)
         else:
+            r.addContent()
             xmlstr = buildResourceDownload(r)
 
-        # fullpath
-        # split on category
-        # self.write("Username = " + self.params['username'] + "\n")
-        # self.write("GET:" + self.request.path)
         self.write(xmlstr)
 
     def put(self):
