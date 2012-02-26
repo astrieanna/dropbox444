@@ -2,6 +2,7 @@ import os
 import os.path as o
 import mimetypes
 import datetime
+import base64
 
 class Resource:
     def initFromUrl(self, url):
@@ -25,11 +26,19 @@ class Resource:
         self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(realpath))
         self.resourceType = mimetypes.guess_type(realpath)[0]
 
-    def addConent(self):
+    def addContent(self, path=False):
+        if path == False:
+            path = self.path
         self.encoding = "Base64"
-        file = open(self.path, "r")
+        file = open(path, "r")
         self.content = base64.b64encode(file.read())
-        close(file)
+        file.close()
+
+    def delete(self):
+        if self.category == "file":
+            os.remove(self.path)
+        else:
+            os.removedirs(self.path)
 
 def urlToPath(url):
     return url.split('/',3)[3]

@@ -5,11 +5,25 @@ import tornado.ioloop
 import tornado.web
 from curtain import digest
 from os import path as ospath
+from urllib2 import HTTPError
 
-def validate(path, username):
-    realpath = ospath.realpath(path)
-    return realpath.startswith('/' + username)
-        
+def forbidden(func):
+    def new_func(self):
+        realpath = ospath.realpath(self.request.path)
+        if not realpath.startswith('/' + self.params['username']):
+            self.send_error(403)
+        else:
+            func(self)
+    return new_func
+
+def notFound(func):
+    def new_func(self):
+        if not ospath.exists('.' + self.request.path):
+            self.send_error(404)
+        else:
+            func(self)
+    return new_func
+
 class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     creds = {}
     def getcreds(uname):
@@ -17,9 +31,9 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
           return Handler.creds[uname]
 
     @digest.digest_auth('realm',getcreds)
+    @forbidden
+    @notFound
     def get(self):
-        if(not validate(self.request.path, self.params['username'])):
-            raise HTTPError(403)
 
         print "host: %s\tpath: %s" % (self.request.host, self.request.path)
 
@@ -34,13 +48,23 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
             r.addContent()
             xmlstr = buildResourceDownload(r)
 
+        print xmlstr
         self.write(xmlstr)
 
+    @digest.digest_auth('realm',getcreds)
+    @forbidden
     def put(self):
+        #TODO: need a notFound for the directory it is in
         self.write("Put:" + self.request)
 
+    @digest.digest_auth('realm',getcreds)
+    @forbidden
+    @notFound
     def delete(self):
-        self.write("Delete:" + self.request)
+        r = Resource()
+        r.deleteContent()
+        self.set_status(200)
+        self.finish()
 
 # TODO: Make password file
 Handler.creds= {}
