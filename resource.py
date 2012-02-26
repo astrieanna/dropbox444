@@ -5,7 +5,9 @@ import datetime
 
 class Resource:
     def initFromUrl(self, url):
+        print "in initFromUrl: url = %s" % (url)
         path = urlToPath(url) 
+        print "urlToPath: %s" % (path)
         print path
         #Should only be called on path that exists
         assert(o.exists(path))

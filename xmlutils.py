@@ -48,9 +48,9 @@ def parseResource(e):
     r.category = e.get('category')
     r.name = e.findtext('ResourceName')
     if r.category == 'directory':
-        r.numItems = e.findtext('ResourceNumItems')
+        r.numItems = int(e.findtext('ResourceNumItems'))
     else:
-        r.size = e.findtext('ResourceSize')
+        r.size = int(e.findtext('ResourceSize'))
     r.url = e.findtext('ResourceURL')
     if r.url:
         r.path = urlToPath(r.url)
@@ -63,10 +63,10 @@ def buildResource(resource):
     e = ET.Element('Resource',{'category' : resource.category})
     if resource.category == 'directory':
         ec = ET.Element('ResourceNumItems')
-        ec.text = resource.numItems
+        ec.text = str(resource.numItems)
     else:
         ec = ET.Element('ResourceSize')
-        ec.text = resource.size
+        ec.text = str(resource.size)
     e.append(ec)
 
     ec = ET.Element('ResourceName')
