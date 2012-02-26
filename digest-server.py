@@ -31,12 +31,9 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
             rs = getResourceList(url)
             xmlstr = buildResourceList(rs)
         else:
+            r.addContent()
             xmlstr = buildResourceDownload(r)
 
-        # fullpath
-        # split on category
-        # self.write("Username = " + self.params['username'] + "\n")
-        # self.write("GET:" + self.request.path)
         self.write(xmlstr)
 
     def put(self):
