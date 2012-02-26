@@ -42,27 +42,39 @@ def buildResourceDownload(resource):
 
 
 #HELPERS:
+propertiesToTags = {
+    'name':'ResourceName',
+    'url':'ResourceURL',
+    'encoding':'ResourceEncoding',
+    'content':'ResourceContent',
+    'resourceType':'ResourceType'
+}
+
+
 # parseResource :: ET.Element -> Resource
 def parseResource(e):
     r = Resource()
+    ETtoObject(e,r,propertiesToTags)
     r.category = e.get('category')
-    r.name = e.findtext('ResourceName')
     if r.category == 'directory':
         r.numItems = int(e.findtext('ResourceNumItems'))
     else:
         r.size = int(e.findtext('ResourceSize'))
-    r.url = e.findtext('ResourceURL')
     if r.url:
         r.path = urlToPath(r.url)
     r.resourceDate = parseDate(e.find('ResourceDate'))
-    r.resourceType = e.findtext('ResourceType')
-    r.encoding = e.findtext('ResourceEncoding')
-    r.content = e.findtext('ResourceContent')
     return r
+
+def ETtoObject(et, obj, ptot):
+    for (prop, tag) in ptot.iteritems():
+        val = et.findtext(tag)
+        if val is not None:
+            setattr(obj, prop, val)
 
 # buildResource :: Resource -> ET.Element
 def buildResource(resource):
     e = ET.Element('Resource',{'category' : resource.category})
+    e.extend(objectToET(resource,propertiesToTags))
     if resource.category == 'directory':
         ec = ET.Element('ResourceNumItems')
         ec.text = str(resource.numItems)
@@ -71,30 +83,19 @@ def buildResource(resource):
         ec.text = str(resource.size)
     e.append(ec)
 
-    ec = ET.Element('ResourceName')
-    ec.text = resource.name
-    e.append(ec)
-
-    ec = ET.Element('ResourceURL')
-    ec.text = resource.url
-    e.append(ec)
-
     if hasattr(resource, 'resourceDate'):
         e.append(buildDate(resource.resourceDate))
 
-    if hasattr(resource, 'encoding'):
-        ec = ET.Element('ResourceEncoding')
-        ec.text = resource.encoding
-        e.append(ec)
-    if hasattr(resource, 'content'):
-        ec = ET.Element('ResourceContent')
-        ec.text = resource.content
-        e.append(ec)
-
-    ec = ET.Element('ResourceType')
-    ec.text = resource.resourceType
-    e.append(ec)
     return e
+
+def objectToET(obj, propertiesToTags):
+    ets = []
+    for (prop, tag) in propertiesToTags.iteritems():
+        if hasattr(obj, prop):
+            ec = ET.Element(tag)
+            ec.text = getattr(obj, prop)
+            ets.append(ec)
+    return ets
 
 # parseDate :: ET.Element -> DT.DateTime
 def parseDate(e):
