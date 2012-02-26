@@ -24,7 +24,7 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         print "host: %s\tpath: %s" % (self.request.host, self.request.path)
 
         r = Resource()
-        url = "http://" + self.request.host + self.request.path
+        url = self.request.full_url()
         r.initFromUrl(url)
 
         if r.category == 'directory':
