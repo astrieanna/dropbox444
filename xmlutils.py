@@ -79,10 +79,11 @@ def parseResource(e):
     ETtoObject(e,r,propertiesToTags)
     r.category = e.get('category')
     if r.category == 'directory':
-        r.numItems = int(e.findtext('ResourceNumItems'))
-    else:
+        if e.findtext('ResourceNumItems') is not None:
+            r.numItems = int(e.findtext('ResourceNumItems'))
+    elif e.findtext('ResourceSize') is not None:
         r.size = int(e.findtext('ResourceSize'))
-    if r.url:
+    if hasattr(r,'url'):
         r.path = urlToPath(r.url)
     r.resourceDate = parseDate(e.find('ResourceDate'))
     return r
@@ -97,15 +98,18 @@ def ETtoObject(et, obj, ptot):
 def buildResource(resource):
     e = ET.Element('Resource',{'category' : resource.category})
     e.extend(objectToET(resource,propertiesToTags))
+    ec = None
     if resource.category == 'directory':
-        ec = ET.Element('ResourceNumItems')
-        ec.text = str(resource.numItems)
-    else:
+        if hasattr(resource,'numItems'):
+            ec = ET.Element('ResourceNumItems')
+            ec.text = str(resource.numItems)
+    elif hasattr(resource, 'size'):
         ec = ET.Element('ResourceSize')
         ec.text = str(resource.size)
-    e.append(ec)
+    if ec is not None:
+        e.append(ec)
 
-    if hasattr(resource, 'resourceDate'):
+    if hasattr(resource, 'resourceDate') and resource.resourceDate is not None:
         e.append(buildDate(resource.resourceDate))
 
     return e
