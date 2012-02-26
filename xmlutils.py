@@ -56,6 +56,8 @@ def parseResource(e):
         r.path = urlToPath(r.url)
     r.resourceDate = parseDate(e.find('ResourceDate'))
     r.resourceType = e.findtext('ResourceType')
+    r.encoding = e.findtext('ResourceEncoding')
+    r.content = e.findtext('ResourceContent')
     return r
 
 # buildResource :: Resource -> ET.Element
@@ -77,8 +79,17 @@ def buildResource(resource):
     ec.text = resource.url
     e.append(ec)
 
-    if resource.resourceDate:
+    if hasattr(resource, 'resourceDate'):
         e.append(buildDate(resource.resourceDate))
+
+    if hasattr(resource, 'encoding'):
+        ec = ET.Element('ResourceEncoding')
+        ec.text = resource.encoding
+        e.append(ec)
+    if hasattr(resource, 'content'):
+        ec = ET.Element('ResourceContent')
+        ec.text = resource.content
+        e.append(ec)
 
     ec = ET.Element('ResourceType')
     ec.text = resource.resourceType
