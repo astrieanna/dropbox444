@@ -1,7 +1,8 @@
-import httplib2
-from xmlutils import *
-from Tkinter import *
 import sys
+import httplib2
+from Tkinter import *
+#code we wrote:
+from xmlutils import *
 import resource
 
 class UserInterface:
