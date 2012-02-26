@@ -7,17 +7,26 @@ import datetime as DT
 def parseResponse(xmlstring):
     e = ET.fromstring(xmlstring)
     if e.text == 'ResourceList':
-        return (True, parseResourceList(e))
+        return (True, _parseResourceList(e))
     else:
-        return (False, parseResourceDownload(e))
+        return (False, _parseResourceDownload(e))
 
 
 # parseResourceList :: ET.Element -> [Resource]
-def parseResourceList(e):
+def _parseResourceList(e):
     output = []
     for child in list(e):
         output.append(parseResource(child))
     return output
+
+# parseResourceList :: ET.Element -> [Resource]
+def parseResourceList(xmlstring):
+    e = ET.fromstring(xmlstring)
+    output = []
+    for child in list(e):
+        output.append(parseResource(child))
+    return output
+
 
 # buildResourceList :: [Resource] -> String
 def buildResourceList(resources):
@@ -27,8 +36,14 @@ def buildResourceList(resources):
     return ET.tostring(e)
 
 # parseResourceDownload :: ET.Element -> Resource
-def parseResourceDownload(e):
+def _parseResourceDownload(e):
     return parseResource(e.find('Resource'))
+
+# parseResourceDownload :: ET.Element -> Resource
+def parseResourceDownload(xmlstring):
+    e = ET.fromstring(xmlstring)
+    return parseResource(e.find('Resource'))
+
 
 # buildResourceDownload :: Resource -> String
 def buildResourceDownload(resource):
