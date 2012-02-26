@@ -7,22 +7,26 @@ from curtain import digest
 from os import path as ospath
 from urllib2 import HTTPError
 
-def forbidden(func):
-    def new_func(self):
-        realpath = ospath.realpath(self.request.path)
-        if not realpath.startswith('/' + self.params['username']):
-            self.send_error(403)
-        else:
-            func(self)
-    return new_func
+def testPredicate(pred, errno):
+    def testPredicateDecorator(func):
+        def newFunc(self):
+            if pred(self):
+                self.send_error(errno)
+            else:
+                func(self)
+        return newFunc
+    return testPredicateDecorator
 
-def notFound(func):
-    def new_func(self):
-        if not ospath.exists('.' + self.request.path):
-            self.send_error(404)
-        else:
-            func(self)
-    return new_func
+def forbidden(self):
+    realpath = ospath.realpath(self.request.path)
+    return not realpath.startswith('/' + self.params['username'])
+
+def enclosingDirectoryNotFound(self):
+    return not ospath.exists('.' + 
+            ospath.dirname(self.request.path.rstrip('/')))
+
+def notFound(self):
+    return not ospath.exists('.' + self.request.path)
 
 class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     creds = {}
@@ -31,8 +35,8 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
           return Handler.creds[uname]
 
     @digest.digest_auth('realm',getcreds)
-    @forbidden
-    @notFound
+    @testPredicate(forbidden, 403)
+    @testPredicate(notFound, 404)
     def get(self):
 
         print "host: %s\tpath: %s" % (self.request.host, self.request.path)
@@ -51,15 +55,18 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         print xmlstr
         self.write(xmlstr)
 
+
     @digest.digest_auth('realm',getcreds)
-    @forbidden
+    @testPredicate(forbidden, 403)
+    @testPredicate(enclosingDirectoryNotFound, 404)
     def put(self):
         #TODO: need a notFound for the directory it is in
         self.write("Put:" + self.request)
 
+
     @digest.digest_auth('realm',getcreds)
-    @forbidden
-    @notFound
+    @testPredicate(forbidden, 403)
+    @testPredicate(notFound, 404)
     def delete(self):
         r = Resource()
         r.deleteContent()
