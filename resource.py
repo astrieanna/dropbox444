@@ -27,8 +27,9 @@ class Resource:
 
     def addConent(self):
         self.encoding = "Base64"
-        with open(self.path, "r") as file:
-            self.content = base64.b64encode(file.read())
+        file = open(self.path, "r")
+        self.content = base64.b64encode(file.read())
+        close(file)
 
 def urlToPath(url):
     return url.split('/',3)[3]
