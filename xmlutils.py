@@ -3,10 +3,18 @@ from resource import Resource
 from resource import urlToPath
 import datetime as DT
 
-# parseResourceList :: String -> [Resource]
-def parseResourceList(xmlstring):
-    output = []
+# parseResponse :: String -> (False, Resource) | (True, [Resource])
+def parseResponse(xmlstring):
     e = ET.fromstring(xmlstring)
+    if e.text == 'ResourceList':
+        return (True, parseResourceList(e))
+    else:
+        return (False, parseResourceDownload(e))
+
+
+# parseResourceList :: ET.Element -> [Resource]
+def parseResourceList(e):
+    output = []
     for child in list(e):
         output.append(parseResource(child))
     return output
@@ -18,9 +26,8 @@ def buildResourceList(resources):
         e.append(buildResource(r))
     return ET.tostring(e)
 
-# parseResourceDownload :: String -> Resource
-def parseResourceDownload(xmlstring):
-    e = ET.fromstring(xmlstring)
+# parseResourceDownload :: ET.Element -> Resource
+def parseResourceDownload(e):
     return parseResource(e.find('Resource'))
 
 # buildResourceDownload :: Resource -> String
