@@ -7,33 +7,36 @@ import resource
 class UserInterface:
     # __init__ :: (UserInterface, main thread, [Resources]) -> ()
     def __init__(self, master, resourceList):
+        #set up master window stuff
         self.master = master
-
-        self.clickableDirs = Listbox(self.master)
-        self.clickableDirs.pack()
-        self.clickableFiles = Listbox(self.master)
-        self.clickableFiles.pack()
         self.frame = Frame(self.master)
 
+        #build top menu bar
+        menubar = Menu(self.master)
+        menubar.add_command(label="Home", command=self.go_home)
+        menubar.add_command(label="Refresh", command=self.refresh)
+        menubar.add_command(label="Close", command=self.frame.quit)
+        master.config(menu=menubar)
+
+        # display current (Home) directory
         self.display_directory(resourceList)
 
-        self.quit = Button(self.frame, text="Close", fg="red", command=self.frame.quit)
-        self.quit.pack(side=LEFT)
+        # add buttons to create folder/upload file
 
-        self.hi_there = Button(self.frame, text="Hello", command=self.say_hi)
-        self.hi_there.pack(side=LEFT)
 
-        self.getFile = Button(self.frame, text = "Get", command = self.say_get(resourceList))
-        self.getFile.pack(side=LEFT)
+    #Navigation
+    def go_home(self):
+        print "ET Phone Home!"
 
-        self.putFile = Button(self.frame, text = "Put", command = self.say_put)
-        self.putFile.pack(side=LEFT)
-
-        self.refreshView = Button(self.frame, text = "Refresh", command = self.refresh)
-        self.refreshView.pack(side=LEFT)
-
-        self.printSelection = Button(self.frame, text = "Print Selection", command = self.print_select)
-        self.printSelection.pack(side=LEFT)
+    #Refresh
+    def refresh(self):
+        h = httplib2.Http(".cache")
+        h.add_credentials('sampleuser', 'samplepw')
+        resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
+                          "GET", body="", 
+                          headers={'content-type':'text/plain'} )
+        self.display_directory(parseResourceList(content))
+        print "Directory Listing Refreshed."
 
     def display_directory(self, resourceList):
         dirNames = []
@@ -43,32 +46,14 @@ class UserInterface:
                 dirNames.append(r.name)
             else:
                 fileNames.append(r.name)
-        self.clickableDirs.delete(0,END)
-        for dname in dirNames:
-            self.clickableDirs.insert(END, dname)
-        self.clickableFiles.delete(0,END)
-        for fname in fileNames:
-            self.clickableFiles.insert(END, fname)
-        self.frame.pack()
+        #actually show the files/dirs...
 
-
-    def say_hi(self):
-        print "hi there, everyone!"
-
+    #Upload/Creation
     def say_put(self):
         print "Put was called."
 
-    def refresh(self):
-        h = httplib2.Http(".cache")
-        h.add_credentials('sampleuser', 'samplepw')
-        resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
-                          "GET", body="", 
-                          headers={'content-type':'text/plain'} )
-        self.display_directory(parseResourceList(content))
-
-        print "Directory Listing Refreshed."
-
-    def say_get(self, list):
+    #Downloading
+    def say_get(self):
         print "************in say get"
         resourceName = self.clickableDirs.get(ACTIVE)
 
@@ -78,19 +63,11 @@ class UserInterface:
                     r.putContent("./Downloads/" + r.name)
                     return
 
-    def print_select(self):
-        print self.clickableDirs.get(ACTIVE)
-
-
-
-
-root = Tk()
+# Grab Home Dir
 h = httplib2.Http(".cache")
 h.add_credentials('sampleuser', 'samplepw')
-
 if (len(sys.argv) > 1):
-    url1=sys.argv[1]
-    resp, content = h.request(url1, 
+    resp, content = h.request(sys.argv[1], 
                               "GET", body="", 
                               headers={'content-type':'text/plain'} )
 else:
@@ -98,6 +75,7 @@ else:
                               "GET", body="", 
                               headers={'content-type':'text/plain'} )
 
-xmlResourceList1 = parseResourceList(content)
-app = UserInterface(root, xmlResourceList1)
+# Start Display
+root = Tk()
+app = UserInterface(root, parseResourceList(content))
 root.mainloop()
