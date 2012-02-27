@@ -6,25 +6,24 @@ import base64
 
 class Resource:
     def initFromUrl(self, url):
-        print "in initFromUrl: url = %s" % (url)
-        path = urlToPath(url) 
-        print "urlToPath: %s" % (path)
-        print path
-        #Should only be called on path that exists
-        assert(o.exists(path))
-        #strip trailing '/' to accomidate basepath
-        realpath = o.realpath(path).rstrip('/')
-
-        self.category = 'directory' if o.isdir(realpath) else 'file'
-        self.name = o.basename(realpath)
-        if(self.category == 'directory'):
-            self.numItems = len(os.listdir(realpath))
-        else:
-            self.size = o.getsize(realpath)
         self.url = url
+
+        # use path
+        path = urlToPath(url).rstrip('/')
+        assert(o.exists(path))
+        self.name = o.basename(path)
+
+        # use normpath
+        path = o.normpath(path).rstrip('/')
         self.path = path
-        self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(realpath))
-        self.resourceType = mimetypes.guess_type(realpath)[0]
+
+        self.category = 'directory' if o.isdir(path) else 'file'
+        if(self.category == 'directory'):
+            self.numItems = len(os.listdir(path))
+        else:
+            self.size = o.getsize(path)
+        self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
+        self.resourceType = mimetypes.guess_type(path)[0]
 
     def addContent(self, path=False):
         if path == False:
@@ -66,9 +65,11 @@ def getResourceList(url):
     (front, path) = splitUrl(url)
     assert(o.isdir(path))
     resourceList = []
-    #TODO: handle ".." listing (probably elsewhere)
-    for file in os.listdir(path):
-        file = o.normpath(path +'/'+ file)
+    files = os.listdir(path)
+    if not o.dirname(urlToPath(url).rstrip('/')) == '':
+        files.insert(0, '..')
+    for file in files:
+        file = path +'/'+ file
         r = Resource()
         r.initFromUrl(front + '/' + file)
         resourceList.append(r)
