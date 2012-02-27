@@ -7,6 +7,9 @@ from curtain import digest
 from os import path as ospath
 from urllib2 import HTTPError
 
+def chunks(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
 def testPredicate(pred, errno):
     def testPredicateDecorator(func):
         def newFunc(self):
@@ -80,10 +83,13 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         self.set_status(200)
         self.finish()
 
-# TODO: Make password file
+passwdfile = open(".passwd", "r")
 Handler.creds= {}
-(user,pw) = ('sampleuser','samplepw')
-Handler.creds[user] = {'auth_username': user, 'auth_password': pw}  
+for [user, pw] in chunks(passwdfile.readlines(), 2):
+    user = user.strip('\n')
+    pw = pw.strip('\n')
+    print user, pw
+    Handler.creds[user] = {'auth_username': user, 'auth_password': pw}  
 
 application = tornado.web.Application([
     (r"/.*", Handler),
