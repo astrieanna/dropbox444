@@ -6,18 +6,22 @@ from xmlutils import *
 import resource
 
 class UserInterface:
-    # __init__ :: (UserInterface, main thread, [Resources]) -> ()
-    def __init__(self, master, resourceList):
-        #set up master window stuff
-        self.master = master
-        self.frame = Frame(self.master)
+    #root: tkinter root
+    #frame: main window pane
+    #home: url to GET home dir
+    #cwd: url to GET current dir
+
+    def __init__(self, tkroot, resourceList):
+        #set up root window stuff
+        self.root = tkroot
+        self.frame = Frame(self.root)
 
         #build top menu bar
-        menubar = Menu(self.master)
+        menubar = Menu(self.root)
         menubar.add_command(label="Home", command=self.go_home)
         menubar.add_command(label="Refresh", command=self.refresh)
         menubar.add_command(label="Close", command=self.frame.quit)
-        master.config(menu=menubar)
+        self.root.config(menu=menubar)
 
         # display current (Home) directory
         self.display_directory(resourceList)
