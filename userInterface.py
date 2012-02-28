@@ -12,11 +12,17 @@ class UserInterface:
     #home: url to GET home dir
     #cwd: url to GET current dir
 
-    def __init__(self, tkroot, resourceList):
+    #user
+    #password
+
+    def __init__(self, tkroot, usrname, pswd, homedir):
+        self.user = usrname
+        self.password = pswd
+        self.home = homedir
+
         #set up root window stuff
         self.root = tkroot
         self.frame = Frame(self.root, width=1000, height=500)
-        # self.frame.pack_propagate(0)
 
         #build top menu bar
         menubar = Menu(self.root)
@@ -95,19 +101,8 @@ class UserInterface:
     def delete_resource(self, name):
         print "Deleting: %s%s" % (self.cwd, name)
 
-# Grab Home Dir
-h = httplib2.Http(".cache")
-h.add_credentials('sampleuser', 'samplepw')
-if (len(sys.argv) > 1):
-    resp, content = h.request(sys.argv[1], 
-                              "GET", body="", 
-                              headers={'content-type':'text/plain'} )
-else:
-    resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
-                              "GET", body="", 
-                              headers={'content-type':'text/plain'} )
-
 # Start Display
 root = Tk()
-app = UserInterface(root, parseResourceList(content))
+app = UserInterface(root, 
+    'sampleuser', 'samplepw', 'http://127.0.0.1:8887/sampleuser/')
 root.mainloop()
