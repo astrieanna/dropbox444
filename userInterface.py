@@ -52,10 +52,10 @@ class UserInterface:
 
     #Navigation
     def go_home(self):
-        print "Going home to: %s" % (this.home)
+        print "Going home to: %s" % (self.home)
 
     def go_here(self, folderName):
-        print "Going to: %s%s" %(this.cwd, folderName)
+        print "Going to: %s%s" %(self.cwd, folderName)
 
     def make_request(self,method, body, path):
         h = httplib2.Http(".cache")
@@ -98,7 +98,7 @@ class UserInterface:
     #Downloading: relpath should be relative to the home dir
     #download_file :: String -> ()
     def download_file(self, relpath):
-        print "Download file from: %s%s" % (this.home, relpath)
+        print "Download file from: %s%s" % (self.home, relpath)
 
     #name of resource to delete in current folder
     def delete_resource(self, name):
