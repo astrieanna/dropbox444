@@ -21,12 +21,12 @@ class UserInterface:
         self.frame = Frame(self.root, width=1000, height=500)
 
         #build top menu bar
-        menubar = Menu(self.root)
-        menubar.add_command(label="Home", command=self.go_home)
-        menubar.add_command(label="Refresh", command=self.refresh)
-        menubar.add_command(label="Close", command=self.frame.quit)
-        self.root.config(menu=menubar)
-
+        menuframe = Frame(self.root)
+        Button(menuframe, text="Home", command=self.go_home).grid(row=0, column=0)
+        Button(menuframe, text="Refresh", command=self.refresh).grid(row=0, column=1)
+        Button(menuframe, text="Close", command=self.frame.quit).grid(row=0, column=2)
+        menuframe.pack()
+    
         # display current (Home) directory
         self.files = Frame(self.root)
         self.refresh()
@@ -37,12 +37,12 @@ class UserInterface:
         bframe.pack()
         b = Button(bframe, text="Create Folder", 
             command=self.create_folder_dialog,
-            padx=10, pady=10)
-        b.pack(expand=1)
+            padx=10, pady=10).grid(row=0, column=0)
+#        b.pack(expand=1)
         b = Button(bframe, text="Upload File", 
             command=self.upload_file_dialog,
-            padx=10, pady=10)
-        b.pack(expand=1)
+            padx=10, pady=10).grid(row=0, column=1)
+#        b.pack(expand=1)
 
 
     #Navigation
@@ -77,12 +77,12 @@ class UserInterface:
             print r.name
             label = Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
-                go = Button(self.files, text=unichr(8658),
+                Button(self.files, text=unichr(8658),
                         command=self.go_here(r.url)).grid(row=i, column=1)
             else:
-                go = Button(self.files, text=unichr(8659),
+                Button(self.files, text=unichr(8659),
                         command=self.download_file(r.url)).grid(row=i, column=1)
-            delete = Button(self.files, text='X', 
+            Button(self.files, text='X', 
                     command=self.delete_resource(r.url)).grid(row=i, column=2)
             i = i + 1
         self.files.pack()
