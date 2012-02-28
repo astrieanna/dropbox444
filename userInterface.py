@@ -53,7 +53,6 @@ class UserInterface:
         def g():
             self.cwd = folderName
             self.refresh()
-            print "Going to: %s" %(folderName)
         return g
 
     def make_request(self,method, body, path):
@@ -66,7 +65,6 @@ class UserInterface:
         self.display_directory(
             parseResourceList(
                 self.make_request("GET","",self.cwd)))
-        print "Directory Listing Refreshed."
 
     #display_directory :: [Resources] -> ()
     def display_directory(self, resourceList):
@@ -76,7 +74,6 @@ class UserInterface:
         fileNames = []
         i = 0
         for r in resourceList:
-            print r.category
             Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
                 Button(self.files, text=unichr(8658),
@@ -112,7 +109,6 @@ class UserInterface:
         src = self.srcinput.get()
         dest = self.destinput.get()
         self.popup.destroy()
-        print "actually upload from: %s%s to: %s%s" % (self.uploads, src, self.cwd, dest)
         srcpath = self.uploads + src
         desturl = self.cwd + dest
 
@@ -144,19 +140,16 @@ class UserInterface:
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
         self.make_request("PUT", xmlstr,self.cwd + r.name)
-        print "Creating new folder at: %s%s" % (self.cwd, r.name)
         self.refresh()
 
     def download_file(self, name):
         def d():
             r = parseResourceDownload(self.make_request("GET","",name))
             r.putContent(self.downloads + r.name)
-            print "Download file from: %s" % (name)
         return d
 
     def delete_resource(self, name):
         def d():
-            print "Deleting: %s" % (name)
             self.make_request("DELETE","", name)
             self.refresh()
         return d
