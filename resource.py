@@ -64,6 +64,7 @@ def splitUrl(url):
     return (front, path)
 
 def getResourceList(url):
+    url = url.rstrip('/')
     (front, path) = splitUrl(url)
     assert(o.isdir(path))
     resourceList = []
