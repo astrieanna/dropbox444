@@ -30,8 +30,10 @@ class UserInterface:
         menuframe.pack()
     
         # display current (Home) directory
-        self.files = Frame(self.root)
+        self.fileframe = Frame(self.root)
+        self.files = Frame(self.fileframe)
         self.refresh()
+        self.fileframe.pack()
 
         # add buttons to create folder/upload file
         bframe = Frame(self.root)
@@ -68,6 +70,8 @@ class UserInterface:
 
     #display_directory :: [Resources] -> ()
     def display_directory(self, resourceList):
+        self.files.destroy()
+        self.files = Frame(self.fileframe)
         dirNames = []
         fileNames = []
         i = 0
