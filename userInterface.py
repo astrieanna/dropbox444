@@ -125,17 +125,26 @@ class UserInterface:
 
     #Create Folder
     def create_folder_dialog(self):
-        print "And what would you like the folder to be named?"
-        print "testfolder1"
-        self.create_folder("testfolder1")
+        top = Toplevel()
+        self.popup = top
+        top.title("What name should the folder have?")
 
-    def create_folder(self, name):
+        self.destinput = StringVar()
+        e = Entry(top, textvariable=self.destinput)
+        e.pack()
+        self.destinput.set("Name of New Folder")
+
+        button = Button(top, text="Create", command=self.create_folder)
+        button.pack()
+
+    def create_folder(self):
         r = Resource()
-        r.name = name
+        r.name = self.destinput.get()
+        self.popup.destroy()
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr,self.cwd + name)
-        print "Creating new folder at: %s%s" % (self.cwd, name)
+        self.make_request("PUT", xmlstr,self.cwd + r.name)
+        print "Creating new folder at: %s%s" % (self.cwd, r.name)
         self.refresh()
 
     def download_file(self, name):
