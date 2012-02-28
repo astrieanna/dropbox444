@@ -25,6 +25,9 @@ class Resource:
         self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
         self.resourceType = mimetypes.guess_type(path)[0]
 
+    def addPath(self):
+        self.path = o.normpath(urlToPath(self.url).rstrip('/')).rstrip('/')
+
     def addContent(self, path=False):
         if path == False:
             path = self.path

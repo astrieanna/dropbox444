@@ -64,8 +64,9 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(forbidden, 403)
     @testPredicate(enclosingDirectoryNotFound, 404)
     def put(self):
-        self.write("Put:" + self.request)
-        resource = xmlutils.parseResourceUpload(self.request.body)
+        self.write("Put:" + str(self.request))
+        resource = parseResourceUpload(self.request.body)
+        resource.addPath()
         # Error if writing uploading a directory where a file exists
         if resource.category == "directory" and not notFound(resource.path):
             return self.send_error(400)
