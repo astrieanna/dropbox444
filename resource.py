@@ -65,10 +65,11 @@ def splitUrl(url):
 def getResourceList(url):
     url = url.rstrip('/')
     (front, path) = splitUrl(url)
+    path = o.normpath(path)
     assert(o.isdir(path))
     resourceList = []
     files = os.listdir(path)
-    if not o.dirname(o.normpath(urlToPath(url))) == '':
+    if not o.dirname(path) == '':
         files.insert(0, '..')
     for file in files:
         file = path +'/'+ file
