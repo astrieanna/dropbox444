@@ -71,7 +71,10 @@ def getResourceList(url):
     resourceList = []
     files = os.listdir(path)
     if not o.dirname(path) == '':
-        files.insert(0, '..')
+        back = Resource()
+        back.initFromUrl(front + '/' + o.normpath(path + '/' + '..'))
+        back.name = '..'
+        resourceList.append(back)
     for file in files:
         file = path +'/'+ file
         r = Resource()
