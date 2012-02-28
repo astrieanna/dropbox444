@@ -1,40 +1,53 @@
-import httplib2
-from xmlutils import *
-from Tkinter import *
 import sys
+import httplib2
+from Tkinter import *
+#code we wrote:
+from xmlutils import *
 import resource
 
 class UserInterface:
-    # __init__ :: (UserInterface, main thread, [Resources]) -> ()
-    def __init__(self, master, resourceList):
-        self.master = master
+    #root: tkinter root
+    #frame: main window pane
 
-        self.clickableDirs = Listbox(self.master)
-        self.clickableDirs.pack()
-        self.clickableFiles = Listbox(self.master)
-        self.clickableFiles.pack()
-        self.frame = Frame(self.master)
+    #home: url to GET home dir
+    #cwd: url to GET current dir
 
+    def __init__(self, tkroot, resourceList):
+        #set up root window stuff
+        self.root = tkroot
+        self.frame = Frame(self.root)
+
+        #build top menu bar
+        menubar = Menu(self.root)
+        menubar.add_command(label="Home", command=self.go_home)
+        menubar.add_command(label="Refresh", command=self.refresh)
+        menubar.add_command(label="Close", command=self.frame.quit)
+        self.root.config(menu=menubar)
+
+        # display current (Home) directory
         self.display_directory(resourceList)
 
-        self.quit = Button(self.frame, text="Close", fg="red", command=self.frame.quit)
-        self.quit.pack(side=LEFT)
+        # add buttons to create folder/upload file
 
-        self.hi_there = Button(self.frame, text="Hello", command=self.say_hi)
-        self.hi_there.pack(side=LEFT)
 
-        self.getFile = Button(self.frame, text = "Get", command = self.say_get(resourceList))
-        self.getFile.pack(side=LEFT)
+    #Navigation
+    def go_home(self):
+        print "Going home to: %s" % (this.home)
 
-        self.putFile = Button(self.frame, text = "Put", command = self.say_put)
-        self.putFile.pack(side=LEFT)
+    def go_here(self, folderName):
+        print "Going to: %s%s" %(this.cwd, folderName)
 
-        self.refreshView = Button(self.frame, text = "Refresh", command = self.refresh)
-        self.refreshView.pack(side=LEFT)
+    #refresh :: () -> ()
+    def refresh(self):
+        h = httplib2.Http(".cache")
+        h.add_credentials('sampleuser', 'samplepw')
+        resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
+                          "GET", body="", 
+                          headers={'content-type':'text/plain'} )
+        self.display_directory(parseResourceList(content))
+        print "Directory Listing Refreshed."
 
-        self.printSelection = Button(self.frame, text = "Print Selection", command = self.print_select)
-        self.printSelection.pack(side=LEFT)
-
+    #display_directory :: [Resources] -> ()
     def display_directory(self, resourceList):
         dirNames = []
         fileNames = []
@@ -43,54 +56,34 @@ class UserInterface:
                 dirNames.append(r.name)
             else:
                 fileNames.append(r.name)
-        self.clickableDirs.delete(0,END)
-        for dname in dirNames:
-            self.clickableDirs.insert(END, dname)
-        self.clickableFiles.delete(0,END)
-        for fname in fileNames:
-            self.clickableFiles.insert(END, fname)
-        self.frame.pack()
+        #actually show the files/dirs...
 
+    #Upload: reldest is relative to self.cwd
+    def upload_file_dialog(self):
+        print "User, which file would you like to upload?"
+    def upload_file(self, src, reldest):
+        print "actually upload from: %s to: %s%s" % (src, self.cwd, reldest)
 
-    def say_hi(self):
-        print "hi there, everyone!"
+    #Create Folder
+    def create_folder_dialog(self):
+        print "And what would you like the folder to be named?"
+    def create_folder(self, name):
+        print "Creating new folder at: %s%s" % (self.cwd, name)
 
-    def say_put(self):
-        print "Put was called."
+    #Downloading: relpath should be relative to the home dir
+    #download_file :: String -> ()
+    def download_file(self, relpath):
+        print "Download file from: %s%s" % (this.home, relpath)
 
-    def refresh(self):
-        h = httplib2.Http(".cache")
-        h.add_credentials('sampleuser', 'samplepw')
-        resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
-                          "GET", body="", 
-                          headers={'content-type':'text/plain'} )
-        self.display_directory(parseResourceList(content))
+    #name of resource to delete in current folder
+    def delete_resource(self, name):
+        print "Deleting: %s%s" % (self.cwd, name)
 
-        print "Directory Listing Refreshed."
-
-    def say_get(self, list):
-        print "************in say get"
-        resourceName = self.clickableDirs.get(ACTIVE)
-
-        for r in list:
-            if r.name == resourceName:
-                if r.category == 'file':
-                    r.putContent("./Downloads/" + r.name)
-                    return
-
-    def print_select(self):
-        print self.clickableDirs.get(ACTIVE)
-
-
-
-
-root = Tk()
+# Grab Home Dir
 h = httplib2.Http(".cache")
 h.add_credentials('sampleuser', 'samplepw')
-
 if (len(sys.argv) > 1):
-    url1=sys.argv[1]
-    resp, content = h.request(url1, 
+    resp, content = h.request(sys.argv[1], 
                               "GET", body="", 
                               headers={'content-type':'text/plain'} )
 else:
@@ -98,6 +91,7 @@ else:
                               "GET", body="", 
                               headers={'content-type':'text/plain'} )
 
-xmlResourceList1 = parseResourceList(content)
-app = UserInterface(root, xmlResourceList1)
+# Start Display
+root = Tk()
+app = UserInterface(root, parseResourceList(content))
 root.mainloop()
