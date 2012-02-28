@@ -51,7 +51,9 @@ class UserInterface:
         self.refresh()
 
     def go_here(self, folderName):
-        print "Going to: %s%s" %(self.cwd, folderName)
+        def g():
+            print "Going to: %s%s" %(self.cwd, folderName)
+        return g
 
     def make_request(self,method, body, path):
         resp, content = h.request(path, 
@@ -70,11 +72,25 @@ class UserInterface:
     def display_directory(self, resourceList):
         dirNames = []
         fileNames = []
+        i = 0
         for r in resourceList:
-            if r.category == 'directory':
-                dirNames.append(r.name)
+            print r.name
+            label = Label(self.files, text=r.name).grid(row=i, column=0)
+            if r.category == "directory":
+                go = Button(self.files, text=unichr(8658),
+                        command=self.go_here(r.url)).grid(row=i, column=1)
             else:
-                fileNames.append(r.name)
+                go = Button(self.files, text=unichr(8659),
+                        command=self.download_file(r.url)).grid(row=i, column=1)
+            delete = Button(self.files, text='X', 
+                    command=self.delete_resource(r.url)).grid(row=i, column=2)
+            i = i + 1
+        self.files.pack()
+       # for r in resourceList:
+       #     if r.category == 'directory':
+       #         dirNames.append(r.name)
+       #     else:
+       #         fileNames.append(r.name)
         #actually show the files/dirs...
 
     #Upload: reldest is relative to self.cwd
@@ -101,11 +117,15 @@ class UserInterface:
     #Downloading: relpath should be relative to the home dir
     #download_file :: String -> ()
     def download_file(self, relpath):
-        print "Download file from: %s%s" % (self.home, relpath)
+        def d():
+            print "Download file from: %s%s" % (self.home, relpath)
+        return d
 
     #name of resource to delete in current folder
     def delete_resource(self, name):
-        print "Deleting: %s%s" % (self.cwd, name)
+        def d():
+            print "Deleting: %s%s" % (self.cwd, name)
+        return d
 
 # Start Display
 
