@@ -91,30 +91,37 @@ class UserInterface:
         self.files.pack()
 
     def upload_file_dialog(self):
-        print "User, which file would you like to upload?"
         top = Toplevel()
         self.popup = top
-        top.title("Which File to Upload?")
+        top.title("Which File to Upload? And where to send it?")
 
-        msg = Message(top, text="Please type filename to upload")
-        msg.pack()
-
-        v = StringVar()
-        self.input = v
-        e = Entry(top, textvariable=v)
+        self.srcinput = StringVar()
+        e = Entry(top, textvariable=self.srcinput)
         e.pack()
+        self.srcinput.set("Name of File to Send")
 
-        v.set("File to Send")
+        self.destinput = StringVar()
+        e = Entry(top, textvariable=self.destinput)
+        e.pack()
+        self.destinput.set("Name of file on server")
+
         button = Button(top, text="Upload", command=self.upload_file)
         button.pack()
 
     def upload_file(self):
-        val = self.input.get()
+        src = self.srcinput.get()
+        dest = self.destinput.get()
         self.popup.destroy()
-        src = val
-        name = val
-        print "input: %s"%(val)
-        print "actually upload from: %s to: %s%s" % (src, self.cwd, name)
+        print "actually upload from: %s%s to: %s%s" % (self.uploads, src, self.cwd, dest)
+        srcpath = self.uploads + src
+        desturl = self.cwd + dest
+
+        r = Resource()
+        r.initFromPath(srcpath)
+        r.addContent(path=srcpath)
+        xmlstr = buildResourceUpload(r)
+        self.make_request("PUT", xmlstr, desturl)
+        self.refresh()
 
     #Create Folder
     def create_folder_dialog(self):
