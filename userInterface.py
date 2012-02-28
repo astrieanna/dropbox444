@@ -32,20 +32,15 @@ class UserInterface:
         self.refresh()
 
         # add buttons to create folder/upload file
-        bframe = Frame(self.root)#, height=300, width=300)
-        # bframe.pack_propagate(0)
+        bframe = Frame(self.root)
         bframe.pack()
         b = Button(bframe, text="Create Folder", 
             command=self.create_folder_dialog,
             padx=10, pady=10).grid(row=0, column=0)
-#        b.pack(expand=1)
         b = Button(bframe, text="Upload File", 
             command=self.upload_file_dialog,
             padx=10, pady=10).grid(row=0, column=1)
-#        b.pack(expand=1)
 
-
-    #Navigation
     def go_home(self):
         self.cwd = self.home
         self.refresh()
@@ -61,7 +56,6 @@ class UserInterface:
                           headers={'content-type':'text/plain'} )
         return content
 
-    #refresh :: () -> ()
     def refresh(self):
         self.display_directory(
             parseResourceList(
@@ -107,19 +101,15 @@ class UserInterface:
         print "Creating new folder at: %s%s" % (self.cwd, name)
         self.refresh()
 
-    #download_file :: String -> ()
     def download_file(self, name):
         def d():
             print "Download file from: %s" % (name)
         return d
 
-    #name of resource to delete in current folder
     def delete_resource(self, name):
         def d():
             print "Deleting: %s%s" % (self.cwd, name)
         return d
-
-# Start Display
 
 user = 'sampleuser'
 password = 'samplepw'
