@@ -19,6 +19,7 @@ class UserInterface:
         self.user = usrname
         self.password = pswd
         self.home = homedir
+        self.cwd = self.home
 
         #set up root window stuff
         self.root = tkroot
@@ -33,7 +34,7 @@ class UserInterface:
 
         # display current (Home) directory
         self.files = Frame(self.root)
-        self.display_directory(resourceList)
+        self.refresh()
 
         # add buttons to create folder/upload file
         bframe = Frame(self.root)#, height=300, width=300)
@@ -62,11 +63,13 @@ class UserInterface:
         resp, content = h.request(path, 
                           method, body=body, 
                           headers={'content-type':'text/plain'} )
+        return content
 
     #refresh :: () -> ()
     def refresh(self):
-        self.make_request("GET","",self.home)
-        self.display_directory(parseResourceList(content))
+        self.display_directory(
+            parseResourceList(
+                self.make_request("GET","",self.cwd)))
         print "Directory Listing Refreshed."
 
     #display_directory :: [Resources] -> ()
