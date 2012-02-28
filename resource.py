@@ -3,6 +3,7 @@ import os.path as o
 import mimetypes
 import datetime
 import base64
+from shutil import rmtree
 
 class Resource:
     def initFromUrl(self, url):
@@ -51,7 +52,7 @@ class Resource:
         if self.category == "file":
             os.remove(self.path)
         else:
-            os.removedirs(self.path)
+            rmtree(self.path)
 
 def urlToPath(url):
     return url.split('/',3)[3]
