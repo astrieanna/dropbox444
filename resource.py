@@ -47,7 +47,7 @@ class Resource:
             file.write(base64.b64decode(self.content))
             file.close()
         
-    def delete(self):
+    def deleteContent(self):
         if self.category == "file":
             os.remove(self.path)
         else:

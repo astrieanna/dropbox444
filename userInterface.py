@@ -118,7 +118,9 @@ class UserInterface:
 
     def delete_resource(self, name):
         def d():
-            print "Deleting: %s%s" % (self.cwd, name)
+            print "Deleting: %s" % (name)
+            self.make_request("DELETE","", name)
+            self.refresh()
         return d
 
 user = 'sampleuser'
