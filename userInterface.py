@@ -86,8 +86,17 @@ class UserInterface:
     #Create Folder
     def create_folder_dialog(self):
         print "And what would you like the folder to be named?"
+        print "testfolder1"
+        self.create_folder("testfolder1")
+
     def create_folder(self, name):
+        r = Resource()
+        r.name = name
+        r.category = 'directory'
+        xmlstr = buildResourceUpload(r)
+        self.make_request("PUT", xmlstr,self.cwd + "/" + name)
         print "Creating new folder at: %s%s" % (self.cwd, name)
+        self.refresh()
 
     #Downloading: relpath should be relative to the home dir
     #download_file :: String -> ()

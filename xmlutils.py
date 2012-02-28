@@ -56,8 +56,8 @@ def parseResourceUpload(xmlstring):
     e = ET.fromstring(xmlstring)
     return parseResource(e.find('Resource'))
 
-# buildResourceDownload :: Resource -> String
-def buildResourceDownload(resource):
+# buildResourceUpload :: Resource -> String
+def buildResourceUpload(resource):
     e = ET.Element('ResourceUpload')
     e.insert(0,buildResource(resource))
     return ET.tostring(e)
