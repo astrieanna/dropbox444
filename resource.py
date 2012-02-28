@@ -37,11 +37,12 @@ class Resource:
         file.close()
 
     def putContent(self, path):
-        if not self.encoding == "Base64":
-            raise Exception("Only Base64 encoding is supported.")
+        print "Category:", self.category
         if self.category == 'directory':
-            mkdir(path)
+            os.mkdir(path)
         else:
+            if not self.encoding == "Base64":
+                raise Exception("Only Base64 encoding is supported.")
             file = open(path, "wb")
             file.write(base64.b64decode(self.content))
             file.close()
