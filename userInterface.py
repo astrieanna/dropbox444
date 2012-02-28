@@ -55,7 +55,6 @@ class UserInterface:
         def g():
             self.cwd = folderName
             self.refresh()
-            print "Going to: %s" %(folderName)
         return g
 
     def make_request(self,method, body, path):
@@ -68,7 +67,6 @@ class UserInterface:
         self.display_directory(
             parseResourceList(
                 self.make_request("GET","",self.cwd)))
-        print "Directory Listing Refreshed."
 
     #display_directory :: [Resources] -> ()
     def display_directory(self, resourceList):
@@ -78,7 +76,6 @@ class UserInterface:
         fileNames = []
         i = 0
         for r in resourceList:
-            print r.category
             Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
                 Button(self.files, text=unichr(8658),
@@ -93,56 +90,68 @@ class UserInterface:
         self.files.pack()
 
     def upload_file_dialog(self):
-        print "User, which file would you like to upload?"
         top = Toplevel()
         self.popup = top
-        top.title("Which File to Upload?")
+        top.title("Which File to Upload? And where to send it?")
 
-        msg = Message(top, text="Please type filename to upload")
-        msg.pack()
-
-        v = StringVar()
-        self.input = v
-        e = Entry(top, textvariable=v)
+        self.srcinput = StringVar()
+        e = Entry(top, textvariable=self.srcinput)
         e.pack()
+        self.srcinput.set("Name of File to Send")
 
-        v.set("File to Send")
+        self.destinput = StringVar()
+        e = Entry(top, textvariable=self.destinput)
+        e.pack()
+        self.destinput.set("Name of file on server")
+
         button = Button(top, text="Upload", command=self.upload_file)
         button.pack()
 
     def upload_file(self):
-        val = self.input.get()
+        src = self.srcinput.get()
+        dest = self.destinput.get()
         self.popup.destroy()
-        src = val
-        name = val
-        print "input: %s"%(val)
-        print "actually upload from: %s to: %s%s" % (src, self.cwd, name)
+        srcpath = self.uploads + src
+        desturl = self.cwd + dest
+
+        r = Resource()
+        r.initFromPath(srcpath)
+        r.addContent(path=srcpath)
+        xmlstr = buildResourceUpload(r)
+        self.make_request("PUT", xmlstr, desturl)
+        self.refresh()
 
     #Create Folder
     def create_folder_dialog(self):
-        print "And what would you like the folder to be named?"
-        print "testfolder1"
-        self.create_folder("testfolder1")
+        top = Toplevel()
+        self.popup = top
+        top.title("What name should the folder have?")
 
-    def create_folder(self, name):
+        self.destinput = StringVar()
+        e = Entry(top, textvariable=self.destinput)
+        e.pack()
+        self.destinput.set("Name of New Folder")
+
+        button = Button(top, text="Create", command=self.create_folder)
+        button.pack()
+
+    def create_folder(self):
         r = Resource()
-        r.name = name
+        r.name = self.destinput.get()
+        self.popup.destroy()
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr,self.cwd + name)
-        print "Creating new folder at: %s%s" % (self.cwd, name)
+        self.make_request("PUT", xmlstr,self.cwd + r.name)
         self.refresh()
 
     def download_file(self, name):
         def d():
             r = parseResourceDownload(self.make_request("GET","",name))
             r.putContent(self.downloads + r.name)
-            print "Download file from: %s" % (name)
         return d
 
     def delete_resource(self, name):
         def d():
-            print "Deleting: %s" % (name)
             self.make_request("DELETE","", name)
             self.refresh()
         return d
