@@ -92,6 +92,15 @@ class UserInterface:
 
     def upload_file_dialog(self):
         print "User, which file would you like to upload?"
+        top = Toplevel()
+        top.title("Which File to Upload?")
+
+        msg = Message(top, text="Please type filename to upload")
+        msg.pack()
+
+        button = Button(top, text="Upload", command=top.destroy)
+        button.pack()
+
     def upload_file(self, src, name):
         print "actually upload from: %s to: %s%s" % (src, self.cwd, name)
 
