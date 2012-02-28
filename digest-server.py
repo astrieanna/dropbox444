@@ -64,8 +64,8 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(forbidden, 403)
     @testPredicate(enclosingDirectoryNotFound, 404)
     def put(self):
-        self.write("Put:" + str(self.request))
         resource = parseResourceUpload(self.request.body)
+        resource.url = self.request.full_url()
         resource.addPath()
         # Error if writing uploading a directory where a file exists
         if resource.category == "directory" and not notFound(resource.path):
@@ -89,7 +89,6 @@ Handler.creds= {}
 for [user, pw] in chunks(passwdfile.readlines(), 2):
     user = user.strip('\n')
     pw = pw.strip('\n')
-    print user, pw
     Handler.creds[user] = {'auth_username': user, 'auth_password': pw}  
 
 application = tornado.web.Application([

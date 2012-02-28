@@ -63,7 +63,6 @@ def splitUrl(url):
     print front, path
     return (front, path)
 
-
 def getResourceList(url):
     (front, path) = splitUrl(url)
     assert(o.isdir(path))
