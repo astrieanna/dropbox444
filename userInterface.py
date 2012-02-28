@@ -12,7 +12,8 @@ class UserInterface:
     #home: url to GET home dir
     #cwd: url to GET current dir
 
-    def __init__(self, tkroot, homedir):
+    def __init__(self, tkroot, homedir, http_handle):
+        self.http_handle = http_handle
         self.home = homedir
         self.cwd = self.home
         self.downloads = "./"
@@ -26,7 +27,8 @@ class UserInterface:
         menuframe = Frame(self.root)
         Button(menuframe, text="Home", command=self.go_home).grid(row=0, column=0)
         Button(menuframe, text="Refresh", command=self.refresh).grid(row=0, column=1)
-        Button(menuframe, text="Close", command=self.frame.quit).grid(row=0, column=2)
+        Button(menuframe, text="Close", command=self.root.destroy).grid(row=0, column=2)
+        Button(menuframe, text="Log Out", command=self.logout).grid(row=0, column=3)
         menuframe.pack()
     
         # display current (Home) directory
@@ -57,7 +59,7 @@ class UserInterface:
         return g
 
     def make_request(self,method, body, path):
-        resp, content = h.request(path, 
+        resp, content = self.http_handle.request(path, 
                           method, body=body, 
                           headers={'content-type':'text/plain'} )
         return content
@@ -144,13 +146,42 @@ class UserInterface:
             self.make_request("DELETE","", name)
             self.refresh()
         return d
+    
+    def logout(self):
+        self.root.destroy()
+        self.root = Tk()
+        login_dialogue(self.root) 
+        self.root.mainloop()
 
-user = 'sampleuser'
-password = 'samplepw'
-homedir = 'http://127.0.0.1:8887/sampleuser/'
-h = httplib2.Http(".cache")
-h.add_credentials(user, password)
+def login_dialogue(root):
+    top = Toplevel()
+    top.title("Which File to Upload?")
+
+    msg = Message(top, text="Please type filename to upload")
+    msg.pack()
+
+    v = StringVar()
+    self.input = v
+    e = Entry(top, textvariable=v)
+    e.pack()
+
+    v.set("File to Send")
+    button = Button(top, text="Upload", command=login(root, top))
+    button.pack()
+
+def login(root, top):
+    def l():
+        user = top.user.get()
+        password = top.
+        user = 'sampleuser'
+        password = 'samplepw'
+        top.destroy()
+        homedir = 'http://127.0.0.1:8887/sampleuser/'
+        h = httplib2.Http(".cache")
+        h.add_credentials(user, password)
+        app = UserInterface(root, homedir, h)
+    return l
 
 root = Tk()
-app = UserInterface(root, homedir)
+login_dialogue(root)
 root.mainloop()
