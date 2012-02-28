@@ -52,7 +52,7 @@ class UserInterface:
 
     def go_here(self, folderName):
         def g():
-            print "Going to: %s%s" %(self.cwd, folderName)
+            print "Going to: %s" %(folderName)
         return g
 
     def make_request(self,method, body, path):
@@ -86,18 +86,11 @@ class UserInterface:
                     command=self.delete_resource(r.url)).grid(row=i, column=2)
             i = i + 1
         self.files.pack()
-       # for r in resourceList:
-       #     if r.category == 'directory':
-       #         dirNames.append(r.name)
-       #     else:
-       #         fileNames.append(r.name)
-        #actually show the files/dirs...
 
-    #Upload: reldest is relative to self.cwd
     def upload_file_dialog(self):
         print "User, which file would you like to upload?"
-    def upload_file(self, src, reldest):
-        print "actually upload from: %s to: %s%s" % (src, self.cwd, reldest)
+    def upload_file(self, src, name):
+        print "actually upload from: %s to: %s%s" % (src, self.cwd, name)
 
     #Create Folder
     def create_folder_dialog(self):
@@ -110,15 +103,14 @@ class UserInterface:
         r.name = name
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr,self.cwd + "/" + name)
+        self.make_request("PUT", xmlstr,self.cwd + name)
         print "Creating new folder at: %s%s" % (self.cwd, name)
         self.refresh()
 
-    #Downloading: relpath should be relative to the home dir
     #download_file :: String -> ()
-    def download_file(self, relpath):
+    def download_file(self, name):
         def d():
-            print "Download file from: %s%s" % (self.home, relpath)
+            print "Download file from: %s" % (name)
         return d
 
     #name of resource to delete in current folder
