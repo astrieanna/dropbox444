@@ -47,7 +47,8 @@ class UserInterface:
 
     #Navigation
     def go_home(self):
-        print "Going home to: %s" % (self.home)
+        self.cwd = self.home
+        self.refresh()
 
     def go_here(self, folderName):
         print "Going to: %s%s" %(self.cwd, folderName)
