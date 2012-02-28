@@ -52,7 +52,7 @@ class UserInterface:
 
     def go_here(self, folderName):
         def g():
-            print "Going to: %s%s" %(self.cwd, folderName)
+            print "Going to: %s" %(folderName)
         return g
 
     def make_request(self,method, body, path):
@@ -87,11 +87,10 @@ class UserInterface:
             i = i + 1
         self.files.pack()
 
-    #Upload: reldest is relative to self.cwd
     def upload_file_dialog(self):
         print "User, which file would you like to upload?"
-    def upload_file(self, src, reldest):
-        print "actually upload from: %s to: %s%s" % (src, self.cwd, reldest)
+    def upload_file(self, src, name):
+        print "actually upload from: %s to: %s%s" % (src, self.cwd, name)
 
     #Create Folder
     def create_folder_dialog(self):
@@ -108,11 +107,10 @@ class UserInterface:
         print "Creating new folder at: %s%s" % (self.cwd, name)
         self.refresh()
 
-    #Downloading: relpath should be relative to the home dir
     #download_file :: String -> ()
-    def download_file(self, relpath):
+    def download_file(self, name):
         def d():
-            print "Download file from: %s%s" % (self.home, relpath)
+            print "Download file from: %s" % (name)
         return d
 
     #name of resource to delete in current folder
