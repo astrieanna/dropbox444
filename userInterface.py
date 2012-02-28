@@ -15,7 +15,8 @@ class UserInterface:
     def __init__(self, tkroot, resourceList):
         #set up root window stuff
         self.root = tkroot
-        self.frame = Frame(self.root)
+        self.frame = Frame(self.root, width=1000, height=500)
+        # self.frame.pack_propagate(0)
 
         #build top menu bar
         menubar = Menu(self.root)
@@ -25,9 +26,21 @@ class UserInterface:
         self.root.config(menu=menubar)
 
         # display current (Home) directory
+        self.files = Frame(self.root)
         self.display_directory(resourceList)
 
         # add buttons to create folder/upload file
+        bframe = Frame(self.root)#, height=300, width=300)
+        # bframe.pack_propagate(0)
+        bframe.pack()
+        b = Button(bframe, text="Create Folder", 
+            command=self.create_folder_dialog,
+            padx=10, pady=10)
+        b.pack(expand=1)
+        b = Button(bframe, text="Upload File", 
+            command=self.upload_file_dialog,
+            padx=10, pady=10)
+        b.pack(expand=1)
 
 
     #Navigation
@@ -37,13 +50,16 @@ class UserInterface:
     def go_here(self, folderName):
         print "Going to: %s%s" %(this.cwd, folderName)
 
+    def make_request(self,method, body, path):
+        h = httplib2.Http(".cache")
+        h.add_credentials(self.user, self.password)
+        resp, content = h.request(path, 
+                          method, body=body, 
+                          headers={'content-type':'text/plain'} )
+
     #refresh :: () -> ()
     def refresh(self):
-        h = httplib2.Http(".cache")
-        h.add_credentials('sampleuser', 'samplepw')
-        resp, content = h.request("http://127.0.0.1:8887/sampleuser/", 
-                          "GET", body="", 
-                          headers={'content-type':'text/plain'} )
+        self.make_request("GET","",self.home)
         self.display_directory(parseResourceList(content))
         print "Directory Listing Refreshed."
 
