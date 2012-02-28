@@ -15,6 +15,8 @@ class UserInterface:
     def __init__(self, tkroot, homedir):
         self.home = homedir
         self.cwd = self.home
+        self.downloads = "./"
+        self.uploads = "./"
 
         #set up root window stuff
         self.root = tkroot
@@ -47,6 +49,8 @@ class UserInterface:
 
     def go_here(self, folderName):
         def g():
+            self.cwd = folderName
+            self.refresh()
             print "Going to: %s" %(folderName)
         return g
 
@@ -103,6 +107,8 @@ class UserInterface:
 
     def download_file(self, name):
         def d():
+            r = parseResourceDownload(self.make_request("GET","",name))
+            r.putContent(self.downloads + r.name)
             print "Download file from: %s" % (name)
         return d
 
