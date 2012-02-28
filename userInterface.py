@@ -86,12 +86,6 @@ class UserInterface:
                     command=self.delete_resource(r.url)).grid(row=i, column=2)
             i = i + 1
         self.files.pack()
-       # for r in resourceList:
-       #     if r.category == 'directory':
-       #         dirNames.append(r.name)
-       #     else:
-       #         fileNames.append(r.name)
-        #actually show the files/dirs...
 
     #Upload: reldest is relative to self.cwd
     def upload_file_dialog(self):
@@ -110,7 +104,7 @@ class UserInterface:
         r.name = name
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr,self.cwd + "/" + name)
+        self.make_request("PUT", xmlstr,self.cwd + name)
         print "Creating new folder at: %s%s" % (self.cwd, name)
         self.refresh()
 
