@@ -84,8 +84,9 @@ class UserInterface:
             else:
                 Button(self.files, text=unichr(8659),
                         command=self.download_file(r.url)).grid(row=i, column=1)
-            Button(self.files, text='X', 
-                    command=self.delete_resource(r.url)).grid(row=i, column=2)
+            if not r.name == '..':
+                Button(self.files, text='X', 
+                        command=self.delete_resource(r.url)).grid(row=i, column=2)
             i = i + 1
         self.files.pack()
 
