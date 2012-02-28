@@ -65,12 +65,10 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(enclosingDirectoryNotFound, 404)
     def put(self):
         resource = parseResourceUpload(self.request.body)
-        resource.url = self.request.full_url()
-        resource.addPath()
         # Error if writing uploading a directory where a file exists
-        if resource.category == "directory" and not notFound(resource.path):
+        if resource.category == "directory" and not notFound(self):
             return self.send_error(400)
-        resource.putContent()
+        resource.putContent(self.request.path)
         self.set_status(200)
         self.finish()
 
@@ -80,6 +78,8 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(notFound, 404)
     def delete(self):
         r = Resource()
+        url = self.request.full_url()
+        r.initFromUrl(url)
         r.deleteContent()
         self.set_status(200)
         self.finish()

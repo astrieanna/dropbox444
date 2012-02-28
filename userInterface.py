@@ -68,8 +68,8 @@ class UserInterface:
         fileNames = []
         i = 0
         for r in resourceList:
-            print r.name
-            label = Label(self.files, text=r.name).grid(row=i, column=0)
+            print r.category
+            Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
                 Button(self.files, text=unichr(8658),
                         command=self.go_here(r.url)).grid(row=i, column=1)

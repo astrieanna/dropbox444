@@ -36,12 +36,10 @@ class Resource:
         self.content = base64.b64encode(file.read())
         file.close()
 
-    def putContent(self, path=False):
+    def putContent(self, path):
         if not self.encoding == "Base64":
             raise Exception("Only Base64 encoding is supported.")
-        if path == False:
-            path = self.path
-        if self.category == "directory":
+        if self.category == 'directory':
             mkdir(path)
         else:
             file = open(path, "wb")
@@ -69,7 +67,7 @@ def getResourceList(url):
     assert(o.isdir(path))
     resourceList = []
     files = os.listdir(path)
-    if not o.dirname(urlToPath(url)) == '':
+    if not o.dirname(o.normpath(urlToPath(url))) == '':
         files.insert(0, '..')
     for file in files:
         file = path +'/'+ file
