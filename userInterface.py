@@ -164,30 +164,36 @@ class UserInterface:
 
 def login_dialogue(root):
     top = Toplevel()
-    top.title("Which File to Upload?")
+    top.title("Login:")
 
-    msg = Message(top, text="Please type filename to upload")
-    msg.pack()
-
-    v = StringVar()
-    self.input = v
-    e = Entry(top, textvariable=v)
+    username = StringVar()
+    e = Entry(top, textvariable=username)
     e.pack()
+    username.set("sampleuser")
 
-    v.set("File to Send")
-    button = Button(top, text="Upload", command=login(root, top))
+    passwd = StringVar()
+    e = Entry(top, textvariable=passwd)
+    e.pack()
+    passwd.set("samplepw")
+
+    host = StringVar()
+    e = Entry(top, textvariable=host)
+    e.pack()
+    host.set("127.0.0.1:8887")
+
+    button = Button(top, text="Login", command=login(root, top, username, passwd, host))
     button.pack()
 
-def login(root, top):
+def login(root, top, uname, pswd, hst):
     def l():
-        user = top.user.get()
-        password = top.
-        user = 'sampleuser'
-        password = 'samplepw'
+        username = uname.get()
+        passwd = pswd.get()
+        host = hst.get()
         top.destroy()
-        homedir = 'http://127.0.0.1:8887/sampleuser/'
+        homedir = 'http://' + host + '/' + username + '/'
+        print "logging into:", homedir
         h = httplib2.Http(".cache")
-        h.add_credentials(user, password)
+        h.add_credentials(username, passwd)
         app = UserInterface(root, homedir, h)
     return l
 
