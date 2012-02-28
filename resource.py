@@ -69,7 +69,7 @@ def getResourceList(url):
     assert(o.isdir(path))
     resourceList = []
     files = os.listdir(path)
-    if not o.dirname(urlToPath(url).rstrip('/')) == '':
+    if not o.dirname(urlToPath(url)) == '':
         files.insert(0, '..')
     for file in files:
         file = path +'/'+ file
