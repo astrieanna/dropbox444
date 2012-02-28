@@ -12,12 +12,7 @@ class UserInterface:
     #home: url to GET home dir
     #cwd: url to GET current dir
 
-    #user
-    #password
-
-    def __init__(self, tkroot, usrname, pswd, homedir):
-        self.user = usrname
-        self.password = pswd
+    def __init__(self, tkroot, homedir):
         self.home = homedir
         self.cwd = self.home
 
@@ -58,8 +53,6 @@ class UserInterface:
         print "Going to: %s%s" %(self.cwd, folderName)
 
     def make_request(self,method, body, path):
-        h = httplib2.Http(".cache")
-        h.add_credentials(self.user, self.password)
         resp, content = h.request(path, 
                           method, body=body, 
                           headers={'content-type':'text/plain'} )
@@ -105,7 +98,13 @@ class UserInterface:
         print "Deleting: %s%s" % (self.cwd, name)
 
 # Start Display
+
+user = 'sampleuser'
+password = 'samplepw'
+homedir = 'http://127.0.0.1:8887/sampleuser/'
+h = httplib2.Http(".cache")
+h.add_credentials(user, password)
+
 root = Tk()
-app = UserInterface(root, 
-    'sampleuser', 'samplepw', 'http://127.0.0.1:8887/sampleuser/')
+app = UserInterface(root, homedir)
 root.mainloop()
