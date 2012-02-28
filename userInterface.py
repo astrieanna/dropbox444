@@ -15,6 +15,8 @@ class UserInterface:
     def __init__(self, tkroot, homedir):
         self.home = homedir
         self.cwd = self.home
+        self.downloads = "./"
+        self.uploads = "./"
 
         #set up root window stuff
         self.root = tkroot
@@ -28,8 +30,10 @@ class UserInterface:
         menuframe.pack()
     
         # display current (Home) directory
-        self.files = Frame(self.root)
+        self.fileframe = Frame(self.root)
+        self.files = Frame(self.fileframe)
         self.refresh()
+        self.fileframe.pack()
 
         # add buttons to create folder/upload file
         bframe = Frame(self.root)
@@ -47,6 +51,8 @@ class UserInterface:
 
     def go_here(self, folderName):
         def g():
+            self.cwd = folderName
+            self.refresh()
             print "Going to: %s" %(folderName)
         return g
 
@@ -64,6 +70,8 @@ class UserInterface:
 
     #display_directory :: [Resources] -> ()
     def display_directory(self, resourceList):
+        self.files.destroy()
+        self.files = Frame(self.fileframe)
         dirNames = []
         fileNames = []
         i = 0
@@ -103,6 +111,8 @@ class UserInterface:
 
     def download_file(self, name):
         def d():
+            r = parseResourceDownload(self.make_request("GET","",name))
+            r.putContent(self.downloads + r.name)
             print "Download file from: %s" % (name)
         return d
 
