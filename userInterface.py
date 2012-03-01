@@ -4,6 +4,7 @@ from Tkinter import *
 #code we wrote:
 from xmlutils import *
 import resource
+from urllib import quote, unquote
 
 class UserInterface:
     #root: tkinter root
@@ -76,6 +77,7 @@ class UserInterface:
         fileNames = []
         i = 0
         for r in resourceList:
+            print r.url
             Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
                 Button(self.files, text=unichr(8658),
@@ -112,7 +114,7 @@ class UserInterface:
         dest = self.destinput.get()
         self.popup.destroy()
         srcpath = self.uploads + src
-        desturl = self.cwd + dest
+        desturl = self.cwd + quote(dest)
 
         r = Resource()
         r.initFromPath(srcpath)
@@ -141,7 +143,7 @@ class UserInterface:
         self.popup.destroy()
         r.category = 'directory'
         xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr,self.cwd + r.name)
+        self.make_request("PUT", xmlstr,self.cwd + quote(r.name))
         self.refresh()
 
     def download_file(self, name):

@@ -4,9 +4,11 @@ import mimetypes
 import datetime
 import base64
 from shutil import rmtree
+from urllib import quote, unquote
 
 class Resource:
     def initFromUrl(self, url):
+        print "iFU::url:%s" %(url)
         self.url = url
 
         # use path
@@ -73,28 +75,35 @@ class Resource:
             rmtree(self.path)
 
 def urlToPath(url):
-    return url.split('/',3)[3]
+    print "url::%s" %(url)
+    return unquote(url.split('/',3)[3])
 
 def splitUrl(url):
+    lame_path = url.split('/',3)[3]
     path = urlToPath(url)
-    front = url[0: len(url) - len(path) - 1]
+    front = url[0: len(url) - len(lame_path) - 1]
     print front, path
     return (front, path)
 
 def getResourceList(url):
-    url = url.rstrip('/')
+    url = url.rstrip('/') #TODO: user urlToPath?
     (front, path) = splitUrl(url)
+    path = unquote(path)
     path = o.normpath(path)
+    print "gRL::path:%s" %(path)
     assert(o.isdir(path))
     resourceList = []
     files = os.listdir(path)
     if not o.dirname(path) == '':
         back = Resource()
-        back.initFromUrl(front + '/' + o.normpath(path + '/' + '..'))
+        backURL = front + '/' + quote(o.normpath(path + '/' + '..'))
+        print "gRL::front:%s + p:%s = backURL:%s" %(front, path, backURL)
+        back.initFromUrl(backURL)
         back.name = '..'
         resourceList.append(back)
     for file in files:
-        file = path +'/'+ file
+        print "gRL::file:%s" % (file)
+        file = quote(path) +'/'+ quote(file)
         r = Resource()
         r.initFromUrl(front + '/' + file)
         resourceList.append(r)

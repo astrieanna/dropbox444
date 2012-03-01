@@ -6,6 +6,8 @@ import tornado.web
 from curtain import digest
 from os import path as ospath
 from urllib2 import HTTPError
+from urllib import unquote
+
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
@@ -21,15 +23,15 @@ def testPredicate(pred, errno):
     return testPredicateDecorator
 
 def forbidden(self):
-    realpath = ospath.realpath(self.request.path)
+    realpath = ospath.realpath(unquote(self.request.path))
     return not realpath.startswith('/' + self.params['username'])
 
 def enclosingDirectoryNotFound(self):
     return not ospath.exists('.' + 
-            ospath.dirname(self.request.path.rstrip('/')))
+            ospath.dirname(unquote(self.request.path).rstrip('/')))
 
 def notFound(self):
-    return not ospath.exists('.' + self.request.path)
+    return not ospath.exists('.' + unquote(self.request.path))
 
 class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     creds = {}
@@ -68,7 +70,7 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         # Error if writing uploading a directory where a file exists
         if resource.category == "directory" and not notFound(self):
             return self.send_error(400)
-        resource.putContent('.'+ self.request.path)
+        resource.putContent('.'+ unquote(self.request.path))
         self.set_status(200)
         self.finish()
 

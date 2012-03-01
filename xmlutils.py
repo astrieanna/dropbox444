@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 from resource import Resource
 from resource import urlToPath
 import datetime as DT
+from urllib import quote, unquote
 
 # parseResponse :: String -> (False, Resource) | (True, [Resource])
 def parseResponse(xmlstring):
@@ -77,6 +78,7 @@ propertiesToTags = {
 def parseResource(e):
     r = Resource()
     ETtoObject(e,r,propertiesToTags)
+    r.name = unquote(r.name)
     r.category = e.get('category')
     if r.category == 'directory':
         if e.findtext('ResourceNumItems') is not None:
