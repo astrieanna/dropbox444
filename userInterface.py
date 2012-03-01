@@ -62,6 +62,9 @@ class UserInterface:
         resp, content = self.http_handle.request(path, 
                           method, body=body, 
                           headers={'content-type':'text/plain'} )
+        if not resp.status == 200:
+            self.error_dialog("Server error status: " + str(resp.status) +
+                    "\n" + resp.reason)
         return content
 
     def refresh(self):
@@ -118,10 +121,21 @@ class UserInterface:
 
         r = Resource()
         r.initFromPath(srcpath)
-        r.addContent(path=srcpath)
-        xmlstr = buildResourceUpload(r)
-        self.make_request("PUT", xmlstr, desturl)
-        self.refresh()
+        if hasattr(r , 'category'):
+            r.addContent(path=srcpath)
+            xmlstr = buildResourceUpload(r)
+            self.make_request("PUT", xmlstr, desturl)
+            self.refresh()
+        else:
+            self.error_dialog("File name provided does not exist.")
+
+    def error_dialog(self, message):
+        top = Toplevel()
+        self.popup = top
+        top.title("ERROR")
+        Label(top, text="\n  " + message + "  \n").pack()
+
+
 
     #Create Folder
     def create_folder_dialog(self):

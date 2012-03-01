@@ -30,20 +30,20 @@ class Resource:
 
     def initFromPath(self, path):
         # use path
-        assert(o.exists(path))
-        self.name = o.basename(path)
+        if o.exists(path):
+            self.name = o.basename(path)
 
-        # use normpath
-        path = o.normpath(path).rstrip('/')
-        self.path = path
+            # use normpath
+            path = o.normpath(path).rstrip('/')
+            self.path = path
 
-        self.category = 'directory' if o.isdir(path) else 'file'
-        if(self.category == 'directory'):
-            self.numItems = len(os.listdir(path))
-        else:
-            self.size = o.getsize(path)
-        self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
-        self.resourceType = mimetypes.guess_type(path)[0]
+            self.category = 'directory' if o.isdir(path) else 'file'
+            if(self.category == 'directory'):
+                self.numItems = len(os.listdir(path))
+            else:
+                self.size = o.getsize(path)
+            self.resourceDate = datetime.datetime.utcfromtimestamp(o.getmtime(path))
+            self.resourceType = mimetypes.guess_type(path)[0]
 
 
     def addPath(self):
