@@ -82,7 +82,7 @@ def splitUrl(url):
     return (front, path)
 
 def getResourceList(url):
-    url = url.rstrip('/') #TODO: user urlToPath?
+    url = url.rstrip('/')
     (front, path) = splitUrl(url)
     path = unquote(path)
     path = o.normpath(path)

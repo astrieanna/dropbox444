@@ -1,10 +1,9 @@
 import sys
 import httplib2
 from Tkinter import *
-#code we wrote:
+from urllib import quote, unquote
 from xmlutils import *
 import resource
-from urllib import quote, unquote
 
 class UserInterface:
     #root: tkinter root
@@ -135,7 +134,6 @@ class UserInterface:
         b = Button(top, text="OK", command=top.destroy)
         b.pack()
 
-    #Create Folder
     def create_folder_dialog(self):
         top = Toplevel()
         self.popup = top
