@@ -182,11 +182,5 @@ if __name__ == "__main__":
                 </Resource>\
                 </ResourceList>"
     rs = parseResourceList(rl_xmlstr)
-    print "RS:"
-    for r in rs:
-        print "\t%s" % (r.name)
     rl_xml = buildResourceList(rs)
     rs2 = parseResourceList(rl_xml)
-    print "RS2:"
-    for r2 in rs2:
-        print "\t%s" % (r2.name)

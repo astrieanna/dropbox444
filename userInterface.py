@@ -80,7 +80,6 @@ class UserInterface:
         fileNames = []
         i = 0
         for r in resourceList:
-            print r.url
             Label(self.files, text=r.name).grid(row=i, column=0)
             if r.category == "directory":
                 Button(self.files, text=unichr(8658),
@@ -206,7 +205,6 @@ def login(root, top, uname, pswd, hst):
         host = hst.get()
         top.destroy()
         homedir = 'http://' + host + '/' + username + '/'
-        print "logging into:", homedir
         h = httplib2.Http(".cache")
         h.add_credentials(username, passwd)
         app = UserInterface(root, homedir, h)

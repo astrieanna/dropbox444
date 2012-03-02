@@ -44,9 +44,6 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
     @testPredicate(forbidden, 403)
     @testPredicate(notFound, 404)
     def get(self):
-
-        print "host: %s\tpath: %s" % (self.request.host, self.request.path)
-
         r = Resource()
         url = self.request.full_url()
         r.initFromUrl(url)
@@ -57,8 +54,6 @@ class Handler(digest.DigestAuthMixin, tornado.web.RequestHandler):
         else:
             r.addContent()
             xmlstr = buildResourceDownload(r)
-
-        print xmlstr
         self.write(xmlstr)
 
 
