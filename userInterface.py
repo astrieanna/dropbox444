@@ -131,11 +131,10 @@ class UserInterface:
 
     def error_dialog(self, message):
         top = Toplevel()
-        self.popup = top
         top.title("ERROR")
         Label(top, text="\n  " + message + "  \n").pack()
-
-
+        b = Button(top, text="OK", command=top.destroy)
+        b.pack()
 
     #Create Folder
     def create_folder_dialog(self):
